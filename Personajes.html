@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Series</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="js/bootstrap.bundle.min.js"> </script>
+</head>
+<body>
+        <div>
+            <nav class="navbar navbar-expand-sm navbar-dark bg-primary" aria-label="Third navbar example">
+                <div class="container-fluid">
+                <a class="navbar-brand" href="Home.html"><img src="https://cdn-icons-png.flaticon.com/512/5554/5554284.png" alt="Series Icono" width="40"/></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample03" aria-controls="navbarsExample03" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarsExample03">
+                    <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="Home.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="CrearPersonaje.html">Nuevo Personaje</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="ModificarPersonaje.html">Modificar Personaje</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Series</a>
+                        <ul id="dropdown" class="dropdown-menu dropdown-menu-dark">    
+                        </ul>
+                    </li>
+                    </ul>
+                </div>
+                </div>
+            </nav>
+    </div>
+
+    <div id="tablaPersonajes">
+        <h1 id="titulo"></h1>
+        <hr class='border border-primary'/>
+        <a id="volver" class='btn btn-outline-danger w-100'>Volver a Serie</a>
+        <hr class='border border-primary'/>
+        <table class='table table-hover'>
+            <thead>
+                <tr>
+                    <th>Personaje</th>
+                    <th>Imagen</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            let urlSeries = "https://apiseriespersonajes2024.azurewebsites.net/"
+            let requestSeries = "api/Series"
+            $.ajax({
+                type: "GET",
+                url: urlSeries + requestSeries,
+                contentType: "application/json",
+                success: function (data) {
+                    var html = ""
+                    $.each(data, function (index, serie) { 
+                        html += "<li><a class='dropdown-item dropdown-item-dark' href='DetalleSerie.html?id=" + serie.idSerie + "'>" + serie.nombre + "</a></li> "
+                    });
+                    $("#dropdown").html(html)
+                }
+            });
+
+            var params = new window.URLSearchParams(window.location.search)
+            var idSerie = params.get('id');
+            $("#titulo").text("Personajes de "+ idSerie)
+            $("#volver").click(function () {
+                window.location.href = "DetalleSerie.html?id=" + idSerie
+            })
+            $.ajax({
+                type: "GET",
+                url: urlSeries + requestSeries + "/PersonajesSerie/" + idSerie,
+                contentType: "dataType",
+                success: function (data) {
+                    var html = ""
+                    $.each(data, function (index, personaje) { 
+                        html += "<tr>"
+                        html += "<td>" + personaje.nombre + "</td>"
+                        html += "<td><img width='256' src='" + personaje.imagen + "' alt='Imagen Personaje'/></td>"
+                        html += "</tr>"
+                    });
+                    $("#tablaPersonajes tbody").html(html)
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Series</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="js/bootstrap.bundle.min.js"> </script>
+</head>
+<body>
+        <div>
+            <nav class="navbar navbar-expand-sm navbar-dark bg-primary" aria-label="Third navbar example">
+                <div class="container-fluid">
+                <a class="navbar-brand" href="Home.html"><img src="https://cdn-icons-png.flaticon.com/512/5554/5554284.png" alt="Series Icono" width="40"/></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample03" aria-controls="navbarsExample03" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarsExample03">
+                    <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="Home.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="CrearPersonaje.html">Nuevo Personaje</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="ModificarPersonaje.html">Modificar Personaje</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Series</a>
+                        <ul id="dropdown" class="dropdown-menu dropdown-menu-dark">    
+                        </ul>
+                    </li>
+                    </ul>
+                </div>
+                </div>
+            </nav>
+    </div>
+    <div class='container mt-2'>
+        <h1>Modificar Personaje</h1>
+        <hr class='border border-primary'/>
+            <label>Serie</label>
+            <select class='form-control mb-2' id='selectSerie' >
+            </select>
+            <label>Personaje</label>
+            <select class='form-control' id='selectPersonaje'>
+            </select>
+            <button class='btn btn-outline-success w-100 mt-2 mb-2' id="botonModificar">
+                Modificar
+            </button>
+        <div class='row'>
+            <div class='col-6' id="col-serie">
+
+            </div>
+            <div class='col-6' id="col-personaje">
+
+            </div>
+        </div>
+    </div>
+
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            let urlSeries = "https://apiseriespersonajes2024.azurewebsites.net/"
+            let requestSeries = "api/Series"
+            $.ajax({
+                type: "GET",
+                url: urlSeries + requestSeries,
+                contentType: "application/json",
+                success: function (data) {
+                    var html = ""
+                    var options = ""
+                    $.each(data, function (index, serie) { 
+                        html += "<li><a class='dropdown-item dropdown-item-dark' href='DetalleSerie.html?id=" + serie.idSerie + "'>" + serie.nombre + "</a></li> "
+                        options += "<option value='" + serie.idSerie + "'>" + serie.nombre + "</option>"
+                    });
+                    $("#dropdown").html(html)
+                    $("#selectSerie").html(options)
+                }
+            });
+            let requestPersonajes = "api/Personajes"
+            $.ajax({
+                type: "GET",
+                url: urlSeries + requestPersonajes,
+                contentType: "application/json",
+                success: function (data) {
+                    var options = ""
+                    $.each(data, function (index, personaje) { 
+                        options += "<option value='" + personaje.idPersonaje + "'>" + personaje.nombre + "</option>"
+                    });
+                    $("#selectPersonaje").html(options)
+                }
+            });
+
+            $("#botonModificar").click(function () {
+                let idPersonaje = $("#selectPersonaje").val()
+                let idSerie = $("#selectSerie").val()
+                
+                $.ajax({
+                    type: "PUT",
+                    url: urlSeries + requestPersonajes + "/" + idPersonaje + "/" + idSerie,
+                    dataType: "application/json",
+                    success: function (response) {
+
+                    }
+                });
+            })
+
+            $("#selectSerie").change(function () {
+                $.ajax({
+                    type: "GET",
+                    url: urlSeries + requestSeries + "/" + $(this).val(),
+                    contentType: "application/json",
+                    success: function (data) {
+                        cajaSerie = ""
+                        cajaSerie += "<h2>"+data.nombre+"</h2>"
+                        cajaSerie += "<hr class='border border-primary' />"
+                        cajaSerie += "<img src='"+data.imagen+"' class='w-100' alt='Imagen Serie'/> "
+                        $("#col-serie").html(cajaSerie)
+                    }
+                });
+            })
+
+            $("#selectPersonaje").change(function () {
+                $.ajax({
+                    type: "GET",
+                    url: urlSeries + requestPersonajes + "/" + $(this).val(),
+                    contentType: "application/json",
+                    success: function (data) {
+                        cajaPersonaje = ""
+                        cajaPersonaje += "<h2>"+data.nombre+"</h2>"
+                        cajaPersonaje += "<hr class='border border-primary' />"
+                        cajaPersonaje += "<img src='"+data.imagen+"' class='w-100' alt='Imagen Serie'/> "
+                        $("#col-personaje").html(cajaPersonaje)
+                    }
+                });
+            })
+        
+        });
+    </script>
+</body>
+</html>
